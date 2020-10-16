@@ -11,9 +11,35 @@ const URL = 'http://musicapi.leanapp.cn/personalized'
 
 const playlistCollection = db.collection('playlist')
 
+const MAX_LIMIT = 100
+
 // 云函数入口函数
 exports.main = async (event, context) => {
-    const existdPlaylist = await playlistCollection.get()
+    // const existdPlaylist = await playlistCollection.get()
+
+    // 解决云端请求数据库每次只能返回100条数据的限制
+    // 思路：分次数取，再将结果拼接起来
+    const countResult = await playlistCollection.count()  // 返回的是对象
+    const total = countResult.total  // 将对象转化为总数
+    const batchTimes = Math.ceil(total / MAX_LIMIT)  //向上取整，表示分次取数所需次数
+    const tasks = []
+    for (let i = 0; i < batchTimes; i++) {
+        // skip: 从第几条数据开始取
+        // limit: 每次取得数据条数
+        let promise = playlistCollection.skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
+        tasks.push(promise)
+    }
+    let existdPlaylist = {
+        data: []
+    }
+    if (tasks.length > 0) {
+        // 等所有任务都完成后（数据取完）再累加数据
+        existdPlaylist = (await (Promise.all(tasks))).reduce((acc, cur) => {
+            return {
+                data: acc.data.concat(cur.data)
+            }
+        })
+    }
 
     const playlist = await rp(URL)
     .then((res) => {
