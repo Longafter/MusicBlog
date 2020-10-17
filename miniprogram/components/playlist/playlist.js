@@ -33,6 +33,14 @@ Component({
      * 组件的方法列表
      */
     methods: {
+        // 跳转歌单详情页面
+        goToMusiclist() {
+            wx.navigateTo({
+              // ES6语法，`${}`拼接字符串
+              url: `../../pages/musiclist/musiclist?playlistId=${this.properties.playlist.id}`,
+            })
+        },
+
         // 数字格式化，num：转化对象 point：保留小数点后几位
         _transNumber(num, point) {
             // 如果 num 有小数点，则取整数部分

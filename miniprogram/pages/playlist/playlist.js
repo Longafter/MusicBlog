@@ -88,10 +88,11 @@ Page({
             name: 'music',
             data: {
                 start: this.data.playlist.length,
-                count: MAX_LIMIT
+                count: MAX_LIMIT,
+                $url: 'playlist'  // 要调用的路由的路径，传入准确路径或者通配符*
             }
         }).then((res) => {
-            console.log(res)
+            console.log('[歌单][获取成功]', res)
             this.setData({
                 playlist: this.data.playlist.concat(res.result.data)
             })

@@ -38,16 +38,13 @@
     "simulatorType": "wechat",
     "simulatorPluginLibVersion": {},
     "condition": {
-        "search": {
-            "list": []
-        },
-        "conversation": {
-            "list": []
-        },
         "plugin": {
             "list": []
         },
         "game": {
+            "list": []
+        },
+        "gamePlugin": {
             "list": []
         },
         "miniprogram": {
@@ -55,7 +52,32 @@
                 {
                     "id": -1,
                     "name": "db guide",
-                    "pathName": "pages/databaseGuide/databaseGuide"
+                    "pathName": "pages/databaseGuide/databaseGuide",
+                    "query": ""
+                },
+                {
+                    "name": "pages/musiclist/musiclist",
+                    "pathName": "pages/musiclist/musiclist",
+                    "query": "playlistId:= 331841455",
+                    "scene": null
+                },
+                {
+                    "name": "musiclist",
+                    "pathName": "pages/musiclist/musiclist",
+                    "query": "playlistId= 331841455",
+                    "scene": null
+                },
+                {
+                    "name": "pages/musiclist/musiclist",
+                    "pathName": "pages/musiclist/musiclist",
+                    "query": "playlistId = 2409342460",
+                    "scene": null
+                },
+                {
+                    "name": "pages/musiclist/musiclist",
+                    "pathName": "pages/musiclist/musiclist",
+                    "query": "playlistId=2409342460",
+                    "scene": null
                 }
             ]
         }
