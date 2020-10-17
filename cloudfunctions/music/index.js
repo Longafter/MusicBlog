@@ -37,5 +37,15 @@ exports.main = async (event, context) => {
         })
     })
 
+    app.router('musicUrl', async(ctx, next) => {
+        ctx.body = await rp(`https://music.163.com/song/media/outer/url?id=${event.musicId}.mp3`)
+        .then((res) => {
+            console.log("[歌曲音源][获取成功]", res)
+            return res
+        }).catch((err) => {
+            console.log("[歌曲音源][获取失败]", err)
+        })
+    })
+
     return app.serve()
 }

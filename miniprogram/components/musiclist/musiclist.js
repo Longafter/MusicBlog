@@ -21,10 +21,14 @@ Component({
      */
     methods: {
         onSelectMusic(event) {
-            let musicid = event.currentTarget.dataset.musicid
+            const musicid = event.currentTarget.dataset.musicid
+            const index = event.currentTarget.dataset.index
             console.log("被选中歌曲", musicid)
             this.setData({
                 playingId: musicid
+            })
+            wx.navigateTo({
+              url: `../../pages/player/player?musicId=${musicid}&index=${index}`,
             })
         }
     }

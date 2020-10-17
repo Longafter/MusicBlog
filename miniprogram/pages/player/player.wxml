@@ -1,2 +1,13 @@
-<!--pages/player/player.wxml-->
-<text>pages/player/player.wxml</text>
+<view class="player-container" style="background: url({{picUrl}}) center/cover no-repeat"></view>
+<view class="player-mask"></view>
+<view class="play-info">
+    <view class="player-disc {{isPlaying ? 'play' : ''}}">
+        <image class="player-img rotation {{isPlaying ? '' : 'rotation-pause'}}" src="{{picUrl}}"></image>
+    </view>
+</view>
+
+<view class="control">
+    <text class="iconfont icon-shangyishoushangyige" bindtap="onPrev"></text>
+    <text class="iconfont {{isPlaying ? 'icon-zanting' : 'icon-arrow-'}}" bindtap="togglePlaying"></text>
+    <text class="iconfont icon-xiayigexiayishou" bindtap="onNext"></text>
+</view>
