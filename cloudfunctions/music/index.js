@@ -14,6 +14,7 @@ const db = cloud.database()
 exports.main = async (event, context) => {
     const app = new TcbRouter({event})
 
+    // 获取歌单
     app.router('playlist', async(ctx, next) => {
         // ctx.body代替return返回值至小程序端
         ctx.body = await db.collection('playlist')
@@ -30,6 +31,7 @@ exports.main = async (event, context) => {
             })
     })
 
+    // 获取歌单里的歌曲列表
     app.router('musiclist', async(ctx, next) => {
         ctx.body = await rp(BASE_URL + '/playlist/detail?id=' + parseInt(event.playlistId))
         .then((res) => {
@@ -37,6 +39,7 @@ exports.main = async (event, context) => {
         })
     })
 
+    // 获取歌曲列表的单首歌曲
     app.router('musicUrl', async(ctx, next) => {
         ctx.body = await rp(`https://music.163.com/song/media/outer/url?id=${event.musicId}.mp3`)
         .then((res) => {
@@ -44,6 +47,14 @@ exports.main = async (event, context) => {
             return res
         }).catch((err) => {
             console.log("[歌曲音源][获取失败]", err)
+        })
+    })
+
+    // 获取歌曲歌词
+    app.router('lyric', async(ctx, next) => {
+        ctx.body = await rp(`https://music.163.com/api/song/lyric?id=${event.musicId}&lv=1&kv=1&tv=-1`)
+        .then((res) => {
+            return res
         })
     })
 

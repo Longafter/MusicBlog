@@ -11,7 +11,9 @@ Component({
      * 组件的属性列表
      */
     properties: {
-
+        isSame: {
+            type: Boolean
+        }
     },
 
     /**
@@ -31,6 +33,9 @@ Component({
      */
     lifetimes: {
         ready() {
+            if (this.properties.isSame && this.data.showTime.totalTime == '00:00') {
+                this._setMusicTime()
+            }
             this._getMovableDis()
             this._bindBGMEvent()
         }
@@ -42,14 +47,14 @@ Component({
     methods: {
         // 拖动进度条触发事件
         onChange(event) {
-            console.log(event)
+            // console.log(event)
             // 拖动
             // this.data.progress 这种赋值方式只是暂时保存，不会展示在页面
             if (event.detail.source == 'touch') {
                 this.data.progress = event.detail.x / (movableAreaWidth - movableViewWidth) * 100,
                 this.data.movableDis = event.detail.x
                 isMoving = true
-                console.log('change', isMoving)
+                // console.log('change', isMoving)
             }
         },
 
@@ -66,7 +71,7 @@ Component({
             // 改变进度条后歌曲节点的变化
             backgroundAudioManager.seek(duration * this.data.progress / 100)
             isMoving = false
-            console.log('end', isMoving)
+            // console.log('end', isMoving)
         },
 
         // 获取进度条宽度
@@ -77,7 +82,7 @@ Component({
             query.exec((rect) => {
                 movableAreaWidth = rect[0].width  // 进度条宽度
                 movableViewWidth = rect[1].width  // 滑块宽度
-                console.log(movableAreaWidth, movableViewWidth)
+                // console.log(movableAreaWidth, movableViewWidth)
             })
         },
 
@@ -85,12 +90,14 @@ Component({
             backgroundAudioManager.onPlay(() => {
                 console.log('onPlay')
                 isMoving = false
+                this.triggerEvent('musicPlay')
             })
             backgroundAudioManager.onStop(() => {
                 console.log('onStop')
             })
             backgroundAudioManager.onPause(() => {
                 console.log('onPause')
+                this.triggerEvent('musicPause')
             })
             backgroundAudioManager.onWaiting(() => {
                 console.log('onWaiting')
@@ -100,10 +107,10 @@ Component({
                 // backgroundAudioManager.duration 获取歌曲时长
                 // 如果获取不到歌曲时长，等待一秒再继续获取
                 if (typeof backgroundAudioManager.duration != 'undefined') {
-                    this._getMusicTime()
+                    this._setMusicTime()
                 } else {
                     setTimeout(() => {
-                        this._getMusicTime()
+                        this._setMusicTime()
                     }, 1000)
                 }
             })
@@ -127,6 +134,10 @@ Component({
                             ['showTime.currentTime']: `${currentTimeFmt.minutes}:${currentTimeFmt.seconds}`
                         })
                         currentSec = sec
+                        // 联动 lyric 组件
+                        this.triggerEvent('timeUpdate', {
+                            currentTime
+                        })
                     }
                 }
             })
@@ -145,8 +156,8 @@ Component({
             })
         },
 
-        // 获取歌曲时长
-        _getMusicTime() {
+        // 设置歌曲时长
+        _setMusicTime() {
             duration = backgroundAudioManager.duration
             // console.log('duration: ', duration)
             const durationFmt = this._dateFormat(duration)

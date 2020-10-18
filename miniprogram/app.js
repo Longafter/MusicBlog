@@ -15,6 +15,17 @@ App({
       })
     }
 
-    this.globalData = {}
+    this.globalData = {
+      playingMusicId: -1  // 当前播放歌曲id
+    }
+  },
+
+  // 赋值
+  setPlayingMusicId(musicId) {
+    this.globalData.playingMusicId = musicId
+  },
+  // 获值
+  getPlayingMusicId() {
+    return this.globalData.playingMusicId
   }
 })
