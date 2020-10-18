@@ -7,8 +7,9 @@
     </view>
 
     <!-- 进度条 -->
+    <!-- 接收组件抛出的事件musicEnd -->
     <view class="progress-bar">
-        <z-progress-bar/>
+        <z-progress-bar bind:musicEnd="onNext"/>
     </view>
 
     <!-- 控制面板 -->

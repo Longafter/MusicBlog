@@ -4,6 +4,7 @@ let movableViewWidth = 0
 const backgroundAudioManager = wx.getBackgroundAudioManager()
 let currentSec = -1  // 当前歌曲播放的秒数
 let duration = 0  // 当前歌曲总时长，以秒为单位
+let isMoving = false  // 表示当前进度条是否在拖拽，解决：当进度条拖动时候和updatetime事件有冲突的问题（拖动时滑块乱跳）
 
 Component({
     /**
@@ -47,6 +48,8 @@ Component({
             if (event.detail.source == 'touch') {
                 this.data.progress = event.detail.x / (movableAreaWidth - movableViewWidth) * 100,
                 this.data.movableDis = event.detail.x
+                isMoving = true
+                console.log('change', isMoving)
             }
         },
 
@@ -62,7 +65,8 @@ Component({
             })
             // 改变进度条后歌曲节点的变化
             backgroundAudioManager.seek(duration * this.data.progress / 100)
-            console.log(duration * this.data.progress / 100)
+            isMoving = false
+            console.log('end', isMoving)
         },
 
         // 获取进度条宽度
@@ -80,6 +84,7 @@ Component({
         _bindBGMEvent() {
             backgroundAudioManager.onPlay(() => {
                 console.log('onPlay')
+                isMoving = false
             })
             backgroundAudioManager.onStop(() => {
                 console.log('onStop')
@@ -104,27 +109,32 @@ Component({
             })
             backgroundAudioManager.onTimeUpdate(() => {
                 console.log('onTimeUpdate')
-                // 获取当前播放时间--纯秒的时间格式，需要格式化时间
-                const currentTime = backgroundAudioManager.currentTime
-                // 获取歌曲总时间
-                const duration = backgroundAudioManager.duration
-                // console.log(currentTime)
-
-                // 歌曲播放时currentTime在一秒间隔内会输出4次值，只需取一次就好
-                const sec = currentTime.toString().split('.')[0]
-                if (sec != currentSec) {
+                if (!isMoving) {
+                    // 获取当前播放时间--纯秒的时间格式，需要格式化时间
+                    const currentTime = backgroundAudioManager.currentTime
+                    // 获取歌曲总时间
+                    const duration = backgroundAudioManager.duration
                     // console.log(currentTime)
-                    const currentTimeFmt = this._dateFormat(currentTime)
-                    this.setData({
-                        movableDis: (movableAreaWidth - movableViewWidth) * (currentTime / duration),
-                        progress: (currentTime / duration) * 100,
-                        ['showTime.currentTime']: `${currentTimeFmt.minutes}:${currentTimeFmt.seconds}`
-                    })
-                    currentSec = sec
+
+                    // 歌曲播放时currentTime在一秒间隔内会输出4次值，只需取一次就好
+                    const sec = currentTime.toString().split('.')[0]
+                    if (sec != currentSec) {
+                        // console.log(currentTime)
+                        const currentTimeFmt = this._dateFormat(currentTime)
+                        this.setData({
+                            movableDis: (movableAreaWidth - movableViewWidth) * (currentTime / duration),
+                            progress: (currentTime / duration) * 100,
+                            ['showTime.currentTime']: `${currentTimeFmt.minutes}:${currentTimeFmt.seconds}`
+                        })
+                        currentSec = sec
+                    }
                 }
             })
             backgroundAudioManager.onEnded(() => {
                 console.log("onEnded")
+                // 组件如何调用父元素方法
+                // 抛出musicEnd时间，在父元素接收
+                this.triggerEvent('musicEnd')
             })
             backgroundAudioManager.onError((res) => {
                 console.error(res.errMsg)

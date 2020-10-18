@@ -29,5 +29,5 @@
     border-radius: 50%;
 }
 .progress {
-    margin-top: 17rpx;
+    margin-top: 14rpx;
 }
