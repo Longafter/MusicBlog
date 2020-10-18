@@ -12,7 +12,6 @@ Page({
      */
     data: {
         picUrl: '',
-        musicUrl: '',
         isPlaying: false,  // false表示不播放，true表示播放
     },
 
@@ -30,20 +29,20 @@ Page({
     // 加载当前歌曲
     _loadMusicDetail(musicId) {
         backgroundAudioManager.stop()  // 每次加载歌曲时当前的播放器是停止的
-
+        const musicUrl = `https://music.163.com/song/media/outer/url?id=${musicId}.mp3`
         let music = musiclist[playingIndex]
         console.log('music: ', music)
-        wx.showLoading({
-          title: '歌曲加载中...',
-        })
         wx.setNavigationBarTitle({
           title: music.name,
         })
         this.setData({
             picUrl: music.al.picUrl,
-            musicUrl: `https://music.163.com/song/media/outer/url?id=${musicId}.mp3`
+            isPlaying: false,
         })
-        backgroundAudioManager.src = this.data.musicUrl
+        wx.showLoading({
+          title: '歌曲加载中...',
+        })
+        backgroundAudioManager.src = musicUrl
         backgroundAudioManager.title = music.name
         backgroundAudioManager.coverImgUrl = music.al.picUrl
         backgroundAudioManager.singer = music.ar[0].name
